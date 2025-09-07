@@ -1,7 +1,7 @@
 package com.example.flick.usecase.user
 
 import com.example.flick.domain.user.Email
-import com.example.flick.domain.user.PasswordHash
+import com.example.flick.domain.user.Password
 import com.example.flick.domain.user.User
 import com.example.flick.domain.user.UserRepository
 import com.example.flick.domain.user.Username
@@ -15,7 +15,7 @@ data class UserRegistrationCommand(
     val password: String
 )
 
-data class UserDto(
+data class UserResponse(
     val id: Long,
     val username: String,
     val email: String
@@ -28,23 +28,23 @@ open class UserRegistrationUseCase(
 ) {
 
     @Transactional
-    fun registerUser(command: UserRegistrationCommand): UserDto {
+    fun registerUser(command: UserRegistrationCommand): UserResponse {
         val username = Username(command.username)
         val email = Email(command.email)
-        val passwordHash = PasswordHash(command.password)
+        val password = Password(command.password)
 
-        // Use the specification for uniqueness checks
+        // 重複チェック
         userRegistrationSpecification.checkUsernameUniqueness(username)
         userRegistrationSpecification.checkEmailUniqueness(email)
 
         val newUser = User(
             username = username,
             email = email,
-            passwordHash = passwordHash
+            password = password
         )
         val savedUser = userRepository.save(newUser)
 
-        return UserDto(
+        return UserResponse(
             id = savedUser.id!!,
             username = savedUser.username.value,
             email = savedUser.email.value

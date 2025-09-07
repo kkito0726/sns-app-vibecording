@@ -1,8 +1,8 @@
 package com.example.flick.presentation.user
 
-import com.example.flick.application.user.UserDto
-import com.example.flick.application.user.UserRegistrationCommand
-import com.example.flick.application.user.UserRegistrationUseCase
+import com.example.flick.usecase.user.UserResponse
+import com.example.flick.usecase.user.UserRegistrationCommand
+import com.example.flick.usecase.user.UserRegistrationUseCase
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -35,13 +35,15 @@ class UserController(
 ) {
 
     @PostMapping("/register")
-    fun registerUser(@Valid @RequestBody request: RegisterUserRequest): ResponseEntity<UserDto> {
+    fun registerUser(@Valid @RequestBody request: RegisterUserRequest): ResponseEntity<UserResponse> {
         val command = UserRegistrationCommand(
             username = request.username,
             email = request.email,
             password = request.password
         )
-        val userDto = userRegistrationUseCase.registerUser(command)
-        return ResponseEntity(userDto, HttpStatus.CREATED)
+        return ResponseEntity(
+            userRegistrationUseCase.registerUser(command),
+            HttpStatus.CREATED
+        )
     }
 }

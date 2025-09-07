@@ -1,7 +1,7 @@
 package com.example.flick.infra.user
 
 import com.example.flick.domain.user.Email
-import com.example.flick.domain.user.PasswordHash
+import com.example.flick.domain.user.Password
 import com.example.flick.domain.user.User
 import com.example.flick.domain.user.UserRepository
 import com.example.flick.domain.user.Username
@@ -20,18 +20,17 @@ open class JooqUserRepository(
     override fun save(user: User): User {
         val now = LocalDateTime.now()
         return if (user.id == null) {
-            // Insert new user
             val record = dslContext.newRecord(USERS).apply {
                 set(USERS.USERNAME, user.username.value)
                 set(USERS.EMAIL, user.email.value)
-                set(USERS.PASSWORD_HASH, passwordEncoder.encode(user.passwordHash.value))
+                set(USERS.PASSWORD_HASH, passwordEncoder.encode(user.password.value))
                 set(USERS.CREATED_AT, now)
                 set(USERS.UPDATED_AT, now)
             }
             record.insert()
             user.copy(
                 id = record.get(USERS.ID),
-                passwordHash = PasswordHash(record.get(USERS.PASSWORD_HASH)),
+                password = Password(record.get(USERS.PASSWORD_HASH)),
                 createdAt = record.get(USERS.CREATED_AT),
                 updatedAt = record.get(USERS.UPDATED_AT)
             )
@@ -46,14 +45,14 @@ open class JooqUserRepository(
                 set(USERS.USERNAME, user.username.value)
                 set(USERS.EMAIL, user.email.value)
                 // Only update passwordHash if it's a new hash (i.e., not already hashed)
-                if (!passwordEncoder.matches(user.passwordHash.value, get(USERS.PASSWORD_HASH))) {
-                    set(USERS.PASSWORD_HASH, passwordEncoder.encode(user.passwordHash.value))
+                if (!passwordEncoder.matches(user.password.value, get(USERS.PASSWORD_HASH))) {
+                    set(USERS.PASSWORD_HASH, passwordEncoder.encode(user.password.value))
                 }
                 set(USERS.UPDATED_AT, now)
             }
             record.update()
             user.copy(
-                passwordHash = PasswordHash(record.get(USERS.PASSWORD_HASH)),
+                password = Password(record.get(USERS.PASSWORD_HASH)),
                 updatedAt = record.get(USERS.UPDATED_AT)
             )
         }
@@ -68,7 +67,7 @@ open class JooqUserRepository(
                     id = it.get(USERS.ID),
                     username = Username(it.get(USERS.USERNAME)),
                     email = Email(it.get(USERS.EMAIL)),
-                    passwordHash = PasswordHash(it.get(USERS.PASSWORD_HASH)),
+                    password = Password(it.get(USERS.PASSWORD_HASH)),
                     createdAt = it.get(USERS.CREATED_AT),
                     updatedAt = it.get(USERS.UPDATED_AT)
                 )
@@ -84,7 +83,7 @@ open class JooqUserRepository(
                     id = it.get(USERS.ID),
                     username = Username(it.get(USERS.USERNAME)),
                     email = Email(it.get(USERS.EMAIL)),
-                    passwordHash = PasswordHash(it.get(USERS.PASSWORD_HASH)),
+                    password = Password(it.get(USERS.PASSWORD_HASH)),
                     createdAt = it.get(USERS.CREATED_AT),
                     updatedAt = it.get(USERS.UPDATED_AT)
                 )

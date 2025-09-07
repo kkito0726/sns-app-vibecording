@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":app:application"))
+    implementation(project(":app:usecase"))
     implementation(project(":jooq-generator")) // Add jooq-generator dependency here
     implementation("org.springframework.boot:spring-boot-starter-jooq")
     implementation("org.springframework.boot:spring-boot-starter-security")
