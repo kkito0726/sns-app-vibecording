@@ -1,4 +1,4 @@
-package com.example.flick.application.user
+package com.example.flick.usecase.user
 
 import com.example.flick.domain.user.Email
 import com.example.flick.domain.user.PasswordHash
