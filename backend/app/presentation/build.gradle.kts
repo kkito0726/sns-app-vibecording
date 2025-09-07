@@ -13,7 +13,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("io.minio:minio:8.5.10")
-    implementation("org.flywaydb:flyway-mysql")
     implementation("com.mysql:mysql-connector-j")
     implementation("org.springframework.boot:spring-boot-starter-validation") // Already there
     implementation("org.reactivestreams:reactive-streams:1.0.4") // Already there
