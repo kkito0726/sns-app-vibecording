@@ -5,7 +5,7 @@ import com.example.flick.domain.user.Password
 import com.example.flick.domain.user.User
 import com.example.flick.domain.user.UserRepository
 import com.example.flick.domain.user.Username
-import com.example.flick.domain.user.specification.UserRegistrationSpecification // Import the new specification
+import com.example.flick.domain.user.specification.UserRegistrationSpecification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

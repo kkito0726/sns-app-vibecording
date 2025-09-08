@@ -1,5 +1,7 @@
 package com.example.flick.domain.user.specification
 
+import com.example.flick.domain.error.ConflictException
+import com.example.flick.domain.error.ErrorCode
 import com.example.flick.domain.user.Email
 import com.example.flick.domain.user.UserRepository
 import com.example.flick.domain.user.Username
@@ -11,13 +13,13 @@ class UserRegistrationSpecification(
 ) {
     fun checkUsernameUniqueness(username: Username) {
         if (userRepository.findByUsername(username) != null) {
-            throw IllegalArgumentException("Username already exists")
+            throw ConflictException(ErrorCode.DUPLICATE_USERNAME)
         }
     }
 
     fun checkEmailUniqueness(email: Email) {
         if (userRepository.findByEmail(email) != null) {
-            throw IllegalArgumentException("Email already exists")
+            throw ConflictException(ErrorCode.DUPLICATE_EMAIL)
         }
     }
 }
