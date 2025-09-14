@@ -6,32 +6,24 @@ import com.example.flick.domain.user.User
 import com.example.flick.domain.user.UserRepository
 import com.example.flick.domain.user.Username
 import com.example.flick.domain.user.specification.UserRegistrationSpecification
+import com.example.flick.usecase.user.input.UserRegistrationInput
+import com.example.flick.usecase.user.response.UserResponse
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-data class UserRegistrationCommand(
-    val username: String,
-    val email: String,
-    val password: String
-)
-
-data class UserResponse(
-    val id: Long,
-    val username: String,
-    val email: String
-)
 
 @Service
 class UserRegistrationUseCase(
     private val userRepository: UserRepository,
-    private val userRegistrationSpecification: UserRegistrationSpecification
+    private val userRegistrationSpecification: UserRegistrationSpecification,
+    private val passwordEncoder: PasswordEncoder
 ) {
-
     @Transactional
-    fun registerUser(command: UserRegistrationCommand): UserResponse {
-        val username = Username(command.username)
-        val email = Email(command.email)
-        val password = Password(command.password)
+    fun registerUser(input: UserRegistrationInput): UserResponse {
+        val username = Username(input.username)
+        val email = Email(input.email)
+        val password = Password(passwordEncoder.encode(input.password))
 
         // 重複チェック
         userRegistrationSpecification.checkUsernameUniqueness(username)

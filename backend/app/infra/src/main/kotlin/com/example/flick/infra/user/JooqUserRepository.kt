@@ -7,14 +7,12 @@ import com.example.flick.domain.user.UserRepository
 import com.example.flick.domain.user.Username
 import com.example.flick.gen.jooq.tables.Users.USERS
 import org.jooq.DSLContext
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
 @Repository
-class JooqUserRepository(
+open class JooqUserRepository(
     private val dslContext: DSLContext,
-    private val passwordEncoder: PasswordEncoder
 ) : UserRepository {
 
     override fun save(user: User): User {
@@ -23,7 +21,7 @@ class JooqUserRepository(
             val record = dslContext.newRecord(USERS).apply {
                 set(USERS.USERNAME, user.username.value)
                 set(USERS.EMAIL, user.email.value)
-                set(USERS.PASSWORD_HASH, passwordEncoder.encode(user.password.value))
+                set(USERS.PASSWORD_HASH, user.password.value)
                 set(USERS.CREATED_AT, now)
                 set(USERS.UPDATED_AT, now)
             }
@@ -45,8 +43,8 @@ class JooqUserRepository(
                 set(USERS.USERNAME, user.username.value)
                 set(USERS.EMAIL, user.email.value)
                 // Only update passwordHash if it's a new hash (i.e., not already hashed)
-                if (!passwordEncoder.matches(user.password.value, get(USERS.PASSWORD_HASH))) {
-                    set(USERS.PASSWORD_HASH, passwordEncoder.encode(user.password.value))
+                if (user.password.value != get(USERS.PASSWORD_HASH)) {
+                    set(USERS.PASSWORD_HASH, user.password.value)
                 }
                 set(USERS.UPDATED_AT, now)
             }

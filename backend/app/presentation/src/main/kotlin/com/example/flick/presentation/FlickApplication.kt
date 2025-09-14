@@ -9,5 +9,5 @@ import org.springframework.context.annotation.ComponentScan
 class FlickApplication
 
 fun main(args: Array<String>) {
-	runApplication<FlickApplication>(*args)
+    runApplication<FlickApplication>(*args)
 }

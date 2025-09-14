@@ -1,6 +1,7 @@
 package com.example.flick.presentation.user
 
 import com.example.flick.presentation.TestSupport
+import com.example.flick.presentation.user.request.RegisterUserRequest
 import org.assertj.db.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull

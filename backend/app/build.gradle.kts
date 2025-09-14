@@ -30,4 +30,8 @@ subprojects {
         testImplementation("org.springframework.security:spring-security-test")
         testImplementation("org.assertj:assertj-db:2.0.2")
     }
+
+    tasks.withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+        enabled = false
+    }
 }

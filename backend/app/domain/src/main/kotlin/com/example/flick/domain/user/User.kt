@@ -10,9 +10,3 @@ data class User(
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null
 )
-
-interface UserRepository {
-    fun save(user: User): User
-    fun findByUsername(username: Username): User?
-    fun findByEmail(email: Email): User?
-}

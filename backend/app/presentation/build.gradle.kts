@@ -5,6 +5,11 @@ plugins {
 
 dependencies {
     implementation(project(":app:usecase"))
+    implementation(project(":app:domain"))
+    val jwtVersion = "0.12.5"
+    implementation("io.jsonwebtoken:jjwt-api:${jwtVersion}")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:${jwtVersion}")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jwtVersion}")
     testRuntimeOnly(project(":app:infra"))
     testImplementation(project(":jooq-generator"))
     testImplementation("org.springframework.boot:spring-boot-starter-jooq")
@@ -12,4 +17,8 @@ dependencies {
 
 springBoot {
     mainClass.set("com.example.flick.presentation.FlickApplicationKt")
+}
+
+tasks.named("bootJar").configure {
+    enabled = true
 }

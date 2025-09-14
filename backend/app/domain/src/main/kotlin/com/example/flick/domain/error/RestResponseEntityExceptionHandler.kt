@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 class RestResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(HttpException::class)
-    fun handleHttpException(exception: HttpException, request: WebRequest) : ResponseEntity<Any>? {
+    fun handleHttpException(exception: HttpException, request: WebRequest): ResponseEntity<Any>? {
         val errorResponse = ErrorResponse(
             exception.errorCode.code,
             exception.errorCode.message,

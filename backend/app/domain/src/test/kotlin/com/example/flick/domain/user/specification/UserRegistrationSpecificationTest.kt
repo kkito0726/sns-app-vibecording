@@ -30,7 +30,7 @@ class UserRegistrationSpecificationTest {
         val username = Username("uniqueUser")
         `when`(userRepository.findByUsername(username)).thenReturn(null)
 
-        assertDoesNotThrow { 
+        assertDoesNotThrow {
             userRegistrationSpecification.checkUsernameUniqueness(username)
         }
     }
@@ -38,7 +38,13 @@ class UserRegistrationSpecificationTest {
     @Test
     fun `ユーザー名が既に存在すればConflictExceptionをスローすること`() {
         val username = Username("existingUser")
-        `when`(userRepository.findByUsername(username)).thenReturn(User(username = username, email = Email("test@example.com"), password = Password("hash")))
+        `when`(userRepository.findByUsername(username)).thenReturn(
+            User(
+                username = username,
+                email = Email("test@example.com"),
+                password = Password("hash")
+            )
+        )
 
         val exception = assertThrows(ConflictException::class.java) {
             userRegistrationSpecification.checkUsernameUniqueness(username)
@@ -51,7 +57,7 @@ class UserRegistrationSpecificationTest {
         val email = Email("unique@example.com")
         `when`(userRepository.findByEmail(email)).thenReturn(null)
 
-        assertDoesNotThrow { 
+        assertDoesNotThrow {
             userRegistrationSpecification.checkEmailUniqueness(email)
         }
     }
@@ -59,7 +65,13 @@ class UserRegistrationSpecificationTest {
     @Test
     fun `メールアドレスが既に存在すればConflictExceptionをスローすること`() {
         val email = Email("existing@example.com")
-        `when`(userRepository.findByEmail(email)).thenReturn(User(username = Username("test"), email = email, password = Password("hash")))
+        `when`(userRepository.findByEmail(email)).thenReturn(
+            User(
+                username = Username("test"),
+                email = email,
+                password = Password("hash")
+            )
+        )
 
         val exception = assertThrows(ConflictException::class.java) {
             userRegistrationSpecification.checkEmailUniqueness(email)
