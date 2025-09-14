@@ -1,7 +1,10 @@
 package com.example.flick.presentation
 
+import com.example.flick.gen.jooq.Tables.FLICKS
 import com.example.flick.gen.jooq.Tables.USERS
+import com.example.flick.presentation.config.SecurityConfig
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.assertj.db.type.Changes
 import org.assertj.db.type.Table
 import org.jooq.DSLContext
 import org.json.JSONArray
@@ -10,13 +13,14 @@ import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import javax.sql.DataSource
-import org.assertj.db.type.Changes
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(SecurityConfig::class)
 open class TestSupport {
     @Autowired
     lateinit var dslContext: DSLContext
@@ -32,6 +36,7 @@ open class TestSupport {
 
     fun deleteAll() {
         dslContext.deleteFrom(USERS).execute()
+        dslContext.deleteFrom(FLICKS).execute()
     }
 
     @BeforeEach
