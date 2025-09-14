@@ -17,22 +17,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
-    private val tokenProvider: TokenProvider,
-    private val customUserDetailsService: CustomUserDetailsService
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter
 ) {
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder =
-        BCryptPasswordEncoder()
-
-    @Bean
-    fun jwtAuthenticationFilter(): JwtAuthenticationFilter =
-        JwtAuthenticationFilter(tokenProvider, customUserDetailsService)
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        jwtAuthenticationFilter: JwtAuthenticationFilter
     ): SecurityFilterChain {
         http
             .csrf { it.disable() }
