@@ -1,4 +1,4 @@
-package com.example.flick.presentation.user.request
+package com.example.flick.presentation.auth.request
 
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank

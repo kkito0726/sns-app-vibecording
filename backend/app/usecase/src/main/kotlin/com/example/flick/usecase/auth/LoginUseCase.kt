@@ -1,20 +1,20 @@
-package com.example.flick.usecase.user
+package com.example.flick.usecase.auth
 
 import com.example.flick.domain.user.Email
 import com.example.flick.domain.user.UserRepository
 import com.example.flick.usecase.config.TokenProvider
-import com.example.flick.usecase.user.input.UserLoginInput
-import com.example.flick.usecase.user.response.UserLoginResponse
+import com.example.flick.usecase.auth.input.LoginInput
+import com.example.flick.usecase.auth.response.LoginResponse
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class UserLoginUseCase(
+class LoginUseCase(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
     private val tokenProvider: TokenProvider
 ) {
-    fun execute(request: UserLoginInput): UserLoginResponse {
+    fun execute(request: LoginInput): LoginResponse {
         val user = userRepository.findByEmail(Email(request.email))
             ?: throw IllegalArgumentException("User not found")
 
@@ -23,6 +23,6 @@ class UserLoginUseCase(
         }
 
         val token = tokenProvider.createToken(user.username.value)
-        return UserLoginResponse(token)
+        return LoginResponse(token)
     }
 }
