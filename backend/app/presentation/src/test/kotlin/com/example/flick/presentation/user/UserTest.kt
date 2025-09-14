@@ -18,11 +18,6 @@ class UserTest : TestSupport() {
         private val TABLE_NAMES = listOf("users")
     }
 
-    @BeforeEach
-    override fun setUp() {
-        super.setUp()
-    }
-
     @Test
     fun ユーザー登録できる() {
         val request = RegisterUserRequest(
