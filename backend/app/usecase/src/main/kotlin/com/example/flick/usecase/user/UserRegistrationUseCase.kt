@@ -22,9 +22,9 @@ data class UserResponse(
 )
 
 @Service
-open class UserRegistrationUseCase(
+class UserRegistrationUseCase(
     private val userRepository: UserRepository,
-    private val userRegistrationSpecification: UserRegistrationSpecification // Inject the specification
+    private val userRegistrationSpecification: UserRegistrationSpecification
 ) {
 
     @Transactional

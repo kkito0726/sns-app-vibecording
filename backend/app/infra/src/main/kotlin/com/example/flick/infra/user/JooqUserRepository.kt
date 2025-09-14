@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
 @Repository
-open class JooqUserRepository(
+class JooqUserRepository(
     private val dslContext: DSLContext,
     private val passwordEncoder: PasswordEncoder
 ) : UserRepository {

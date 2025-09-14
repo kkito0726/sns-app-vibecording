@@ -8,7 +8,7 @@ buildscript {
     }
 }
 
-import nu.studer.gradle.jooq.JooqEdition
+//import nu.studer.gradle.jooq.JooqEdition
 
 plugins {
     id("nu.studer.jooq")
@@ -24,7 +24,7 @@ dependencies {
 
 jooq {
     version.set(jooqVersion)
-    edition.set(JooqEdition.OSS)
+//    edition.set(JooqEdition.OSS)
     configurations {
         create("main") {
             jooqConfiguration.apply {

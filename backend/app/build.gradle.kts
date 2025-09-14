@@ -9,6 +9,7 @@ subprojects {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "java")
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.spring")
 
     dependencies {
         implementation("org.springframework.boot:spring-boot-starter")
@@ -20,11 +21,13 @@ subprojects {
         implementation("io.minio:minio:8.5.10")
         implementation("com.mysql:mysql-connector-j")
         implementation("org.springframework.boot:spring-boot-starter-validation") // Already there
-        implementation("org.reactivestreams:reactive-streams:1.0.4") // Already there
 
         testImplementation("org.junit.jupiter:junit-jupiter-api")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
         testImplementation("org.mockito:mockito-core")
         testImplementation("org.mockito:mockito-junit-jupiter")
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.springframework.security:spring-security-test")
+        testImplementation("org.assertj:assertj-db:2.0.2")
     }
 }

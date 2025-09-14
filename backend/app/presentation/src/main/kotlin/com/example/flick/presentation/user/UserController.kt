@@ -43,7 +43,7 @@ class UserController(
         )
         return ResponseEntity(
             userRegistrationUseCase.registerUser(command),
-            HttpStatus.CREATED
+            HttpStatus.OK
         )
     }
 }
