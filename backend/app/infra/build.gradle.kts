@@ -1,7 +1,3 @@
-plugins {
-    kotlin("jvm")
-}
-
 dependencies {
     implementation(project(":app:domain"))
     implementation(project(":jooq-generator"))
