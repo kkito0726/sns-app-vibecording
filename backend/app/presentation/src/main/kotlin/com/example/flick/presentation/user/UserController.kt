@@ -1,8 +1,9 @@
 package com.example.flick.presentation.user
 
 import com.example.flick.presentation.user.request.RegisterUserRequest
+import com.example.flick.usecase.follow.FollowUseCase
+import com.example.flick.usecase.user.UserProfileUseCase
 import com.example.flick.usecase.user.UserRegistrationUseCase
-import com.example.flick.usecase.user.UserService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,7 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails
 @RequestMapping("/api/users")
 class UserController(
     private val userRegistrationUseCase: UserRegistrationUseCase,
-    private val userService: UserService
+    private val userProfileUseCase: UserProfileUseCase,
+    private val followUseCase: FollowUseCase
 ) {
     @PostMapping("/register")
     fun registerUser(@Valid @RequestBody request: RegisterUserRequest): ResponseEntity<UserResponse> {
@@ -37,7 +39,7 @@ class UserController(
         @PathVariable userId: Long,
         @AuthenticationPrincipal authUser: UserDetails
     ): ResponseEntity<UserResponse> {
-        val userProfile = userService.getUserProfile(userId, authUser)
+        val userProfile = userProfileUseCase.getUserProfile(userId, authUser)
         return ResponseEntity(userProfile, HttpStatus.OK)
     }
 
@@ -47,7 +49,7 @@ class UserController(
         @PathVariable userId: Long,
         @AuthenticationPrincipal authUser: UserDetails
     ): ResponseEntity<Void> {
-        userService.followUser(authUser, userId)
+        followUseCase.followUser(authUser, userId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
@@ -57,7 +59,7 @@ class UserController(
         @PathVariable userId: Long,
         @AuthenticationPrincipal authUser: UserDetails
     ): ResponseEntity<Void> {
-        userService.unfollowUser(authUser, userId)
+        followUseCase.unfollowUser(authUser, userId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }
