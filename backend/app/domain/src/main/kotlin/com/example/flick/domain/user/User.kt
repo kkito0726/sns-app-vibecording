@@ -7,6 +7,8 @@ data class User(
     val username: Username,
     val email: Email,
     val password: Password,
+    val profileImageUrl: String? = null,
+    val bio: String? = null,
     val createdAt: LocalDateTime? = null,
     val updatedAt: LocalDateTime? = null
 )
