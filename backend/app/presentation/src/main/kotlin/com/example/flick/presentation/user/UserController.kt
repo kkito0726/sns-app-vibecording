@@ -32,35 +32,32 @@ class UserController(
     }
 
     // ユーザープロフィール取得
-    @GetMapping("/{username}")
+    @GetMapping("/{userId}")
     fun getUserProfile(
-        @PathVariable username: String,
-        @AuthenticationPrincipal currentUser: UserDetails? // 認証済みユーザーの情報を取得
+        @PathVariable userId: Long,
+        @AuthenticationPrincipal authUser: UserDetails
     ): ResponseEntity<UserResponse> {
-        val currentUserId = currentUser?.username?.let { userService.getUserProfile(it, null).id } // 認証済みユーザーのIDを取得
-        val userProfile = userService.getUserProfile(username, currentUserId)
+        val userProfile = userService.getUserProfile(userId, authUser)
         return ResponseEntity(userProfile, HttpStatus.OK)
     }
 
     // ユーザーをフォロー
-    @PostMapping("/{username}/follow")
+    @PostMapping("/{userId}/follow")
     fun followUser(
-        @PathVariable username: String,
-        @AuthenticationPrincipal currentUser: UserDetails // 認証済みユーザーの情報を取得
+        @PathVariable userId: Long,
+        @AuthenticationPrincipal authUser: UserDetails
     ): ResponseEntity<Void> {
-        val followerId = userService.getUserProfile(currentUser.username, null).id // フォローするユーザーのIDを取得
-        userService.followUser(followerId!!, username)
+        userService.followUser(authUser, userId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 
     // ユーザーのフォロー解除
-    @DeleteMapping("/{username}/follow")
+    @DeleteMapping("/{userId}/follow")
     fun unfollowUser(
-        @PathVariable username: String,
-        @AuthenticationPrincipal currentUser: UserDetails // 認証済みユーザーの情報を取得
+        @PathVariable userId: Long,
+        @AuthenticationPrincipal authUser: UserDetails
     ): ResponseEntity<Void> {
-        val followerId = userService.getUserProfile(currentUser.username, null).id // フォロー解除するユーザーのIDを取得
-        userService.unfollowUser(followerId!!, username)
+        userService.unfollowUser(authUser, userId)
         return ResponseEntity(HttpStatus.NO_CONTENT)
     }
 }

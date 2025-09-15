@@ -56,6 +56,22 @@ open class JooqUserRepository(
         }
     }
 
+    override fun findById(userId: Long): User? {
+        return dslContext.selectFrom(USERS)
+            .where(USERS.ID.eq(userId))
+            .fetchOne()
+            ?.let {
+                User(
+                    id = it.get(USERS.ID),
+                    username = Username(it.get(USERS.USERNAME)),
+                    email = Email(it.get(USERS.EMAIL)),
+                    password = Password(it.get(USERS.PASSWORD_HASH)),
+                    createdAt = it.get(USERS.CREATED_AT),
+                    updatedAt = it.get(USERS.UPDATED_AT)
+                )
+            }
+    }
+
     override fun findByUsername(username: Username): User? {
         return dslContext.selectFrom(USERS)
             .where(USERS.USERNAME.eq(username.value))

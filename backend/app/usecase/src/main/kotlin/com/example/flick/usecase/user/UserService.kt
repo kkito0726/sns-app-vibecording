@@ -6,6 +6,7 @@ import com.example.flick.domain.follow.FollowRepository
 import com.example.flick.domain.user.UserRepository
 import com.example.flick.domain.user.Username
 import com.example.flick.usecase.user.response.UserResponse
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,47 +17,54 @@ class UserService(
 ) {
 
     @Transactional
-    fun followUser(followerId: Long, followingUsername: String) {
-        val followingUser = userRepository.findByUsername(Username(followingUsername))
+    fun followUser(authUser: UserDetails, followingUserId: Long) {
+        val authUserId = userRepository.findByUsername(Username(authUser.username))?.id
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND_USER)
+        val followingUser = userRepository.findById(followingUserId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND_USER)
 
-        if (followerId == followingUser.id) {
+        if (authUserId == followingUser.id) {
             throw IllegalArgumentException("Cannot follow yourself.")
         }
 
-        if (followRepository.isFollowing(followerId, followingUser.id!!)) {
+        if (followRepository.isFollowing(authUserId, followingUser.id!!)) {
             // Already following, do nothing or throw a specific exception
             return
         }
 
-        followRepository.follow(followerId, followingUser.id!!)
+        followRepository.follow(authUserId, followingUser.id!!)
     }
 
     @Transactional
-    fun unfollowUser(followerId: Long, followingUsername: String) {
-        val followingUser = userRepository.findByUsername(Username(followingUsername))
+    fun unfollowUser(authUser: UserDetails, followingUserId: Long) {
+        val authUserId = userRepository.findByUsername(Username(authUser.username))?.id
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND_USER)
+        val followingUser = userRepository.findById(followingUserId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND_USER)
 
-        if (followerId == followingUser.id) {
+        if (authUserId == followingUser.id) {
             throw IllegalArgumentException("Cannot unfollow yourself.")
         }
 
-        if (!followRepository.isFollowing(followerId, followingUser.id!!)) {
+        if (!followRepository.isFollowing(authUserId, followingUser.id!!)) {
             // Not following, do nothing or throw a specific exception
             return
         }
 
-        followRepository.unfollow(followerId, followingUser.id!!) 
+        followRepository.unfollow(authUserId, followingUser.id!!)
     }
 
     @Transactional(readOnly = true)
-    fun getUserProfile(username: String, currentUserId: Long?): UserResponse {
-        val user = userRepository.findByUsername(Username(username))
+    fun getUserProfile(userId: Long, authUser: UserDetails): UserResponse {
+        val authUserId = userRepository.findByUsername(Username(authUser.username))?.id
+            ?: throw NotFoundException(ErrorCode.NOT_FOUND_USER)
+        val user = userRepository.findById(userId)
             ?: throw NotFoundException(ErrorCode.NOT_FOUND_USER)
 
         val followerCount = followRepository.getFollowerCount(user.id!!)
-        val followingCount = followRepository.getFollowingCount(user.id!!) 
-        val isFollowing = currentUserId?.let { followRepository.isFollowing(it, user.id!!) } ?: false
+        val followingCount = followRepository.getFollowingCount(user.id!!)
+        // ログインユーザーが検索対象のユーザーをフォーローしているか？
+        val isFollowing = followRepository.isFollowing(authUserId, user.id!!)
 
         return UserResponse(
             id = user.id!!,
