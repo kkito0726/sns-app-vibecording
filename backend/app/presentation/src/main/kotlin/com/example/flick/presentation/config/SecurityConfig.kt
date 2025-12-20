@@ -31,6 +31,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
+                it.requestMatchers("/health").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 it.anyRequest().authenticated()
