@@ -5,7 +5,6 @@ plugins {
 description = "Flick SNS Application"
 
 subprojects {
-    apply(plugin = "org.springframework.boot")
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "java")
     apply(plugin = "org.jetbrains.kotlin.jvm")

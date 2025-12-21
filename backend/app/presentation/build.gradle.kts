@@ -6,11 +6,11 @@ plugins {
 dependencies {
     implementation(project(":app:usecase"))
     implementation(project(":app:domain"))
+    implementation(project(":app:infra"))
     val jwtVersion = "0.12.5"
     implementation("io.jsonwebtoken:jjwt-api:${jwtVersion}")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:${jwtVersion}")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jwtVersion}")
-    testImplementation(project(":app:infra"))
     testImplementation(project(":jooq-generator"))
     testImplementation("org.springframework.boot:spring-boot-starter-jooq")
 }
