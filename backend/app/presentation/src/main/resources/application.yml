@@ -1,4 +1,6 @@
 spring:
+  flyway:
+    enabled: false
   datasource:
     url: ${JDBC_URL:jdbc:mysql://localhost:3306/flick_db}
     username: ${DB_USER:root}
