@@ -1,7 +1,7 @@
 package com.example.flick.presentation
 
-import com.example.flick.gen.jooq.Tables.FLICKS
-import com.example.flick.gen.jooq.Tables.USERS
+import com.example.flick.gen.jooq.tables.references.FLICKS
+import com.example.flick.gen.jooq.tables.references.USERS
 import com.example.flick.presentation.config.SecurityConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.db.type.Changes

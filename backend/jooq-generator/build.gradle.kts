@@ -35,6 +35,7 @@ jooq {
                     password = "password"
                 }
                 generator.apply {
+                    name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
                         name = "org.jooq.meta.mysql.MySQLDatabase"
                         inputSchema = "flick_db"
@@ -43,24 +44,14 @@ jooq {
                     }
                     target.apply {
                         packageName = "com.example.flick.gen.jooq"
-                        directory = layout.buildDirectory.dir("generated-sources/jooq-kotlin").get().asFile.absolutePath
+                        directory = "src/main/kotlin"
                     }
-
                 }
             }
         }
     }
 }
 
-// Share the generated code as a source set
-val generatedSources = tasks.named("generateJooq") {
-    outputs.dir(provider { jooq.configurations.getByName("main").jooqConfiguration.generator.target.directory })
-}
-
-sourceSets {
-    main {
-        java {
-            srcDir(generatedSources)
-        }
-    }
+tasks.named("generateJooq") {
+    enabled = false
 }

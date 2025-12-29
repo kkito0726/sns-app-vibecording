@@ -5,7 +5,7 @@ import com.example.flick.domain.user.Password
 import com.example.flick.domain.user.User
 import com.example.flick.domain.user.UserRepository
 import com.example.flick.domain.user.Username
-import com.example.flick.gen.jooq.tables.Users.USERS
+import com.example.flick.gen.jooq.tables.references.USERS
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
@@ -28,7 +28,7 @@ open class JooqUserRepository(
             record.insert()
             user.copy(
                 id = record.get(USERS.ID),
-                password = Password(record.get(USERS.PASSWORD_HASH)),
+                password = Password(record.get(USERS.PASSWORD_HASH)!!),
                 createdAt = record.get(USERS.CREATED_AT),
                 updatedAt = record.get(USERS.UPDATED_AT)
             )
@@ -50,7 +50,7 @@ open class JooqUserRepository(
             }
             record.update()
             user.copy(
-                password = Password(record.get(USERS.PASSWORD_HASH)),
+                password = Password(record.get(USERS.PASSWORD_HASH)!!),
                 updatedAt = record.get(USERS.UPDATED_AT)
             )
         }
@@ -63,9 +63,9 @@ open class JooqUserRepository(
             ?.let {
                 User(
                     id = it.get(USERS.ID),
-                    username = Username(it.get(USERS.USERNAME)),
-                    email = Email(it.get(USERS.EMAIL)),
-                    password = Password(it.get(USERS.PASSWORD_HASH)),
+                    username = Username(it.get(USERS.USERNAME)!!),
+                    email = Email(it.get(USERS.EMAIL)!!),
+                    password = Password(it.get(USERS.PASSWORD_HASH)!!),
                     createdAt = it.get(USERS.CREATED_AT),
                     updatedAt = it.get(USERS.UPDATED_AT)
                 )
@@ -79,9 +79,9 @@ open class JooqUserRepository(
             ?.let {
                 User(
                     id = it.get(USERS.ID),
-                    username = Username(it.get(USERS.USERNAME)),
-                    email = Email(it.get(USERS.EMAIL)),
-                    password = Password(it.get(USERS.PASSWORD_HASH)),
+                    username = Username(it.get(USERS.USERNAME)!!),
+                    email = Email(it.get(USERS.EMAIL)!!),
+                    password = Password(it.get(USERS.PASSWORD_HASH)!!),
                     createdAt = it.get(USERS.CREATED_AT),
                     updatedAt = it.get(USERS.UPDATED_AT)
                 )
@@ -95,9 +95,9 @@ open class JooqUserRepository(
             ?.let {
                 User(
                     id = it.get(USERS.ID),
-                    username = Username(it.get(USERS.USERNAME)),
-                    email = Email(it.get(USERS.EMAIL)),
-                    password = Password(it.get(USERS.PASSWORD_HASH)),
+                    username = Username(it.get(USERS.USERNAME)!!),
+                    email = Email(it.get(USERS.EMAIL)!!),
+                    password = Password(it.get(USERS.PASSWORD_HASH)!!),
                     createdAt = it.get(USERS.CREATED_AT),
                     updatedAt = it.get(USERS.UPDATED_AT)
                 )

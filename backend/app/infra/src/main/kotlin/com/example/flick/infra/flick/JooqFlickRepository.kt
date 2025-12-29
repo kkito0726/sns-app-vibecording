@@ -2,7 +2,7 @@ package com.example.flick.infra.flick
 
 import com.example.flick.domain.flick.Flick
 import com.example.flick.domain.flick.FlickRepository
-import com.example.flick.gen.jooq.tables.Flicks.FLICKS
+import com.example.flick.gen.jooq.tables.references.FLICKS
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime

@@ -2,8 +2,8 @@ package com.example.flick.infra.user
 
 import com.example.flick.domain.follow.Follow
 import com.example.flick.domain.follow.FollowRepository
-import com.example.flick.gen.jooq.Tables.FOLLOWS
-import com.example.flick.gen.jooq.Tables.USERS
+import com.example.flick.gen.jooq.tables.references.FOLLOWS
+import com.example.flick.gen.jooq.tables.references.USERS
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 

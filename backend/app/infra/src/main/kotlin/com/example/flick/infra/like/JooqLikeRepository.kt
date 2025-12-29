@@ -2,7 +2,7 @@ package com.example.flick.infra.like
 
 import com.example.flick.domain.like.Like
 import com.example.flick.domain.like.LikeRepository
-import com.example.flick.gen.jooq.tables.Likes.LIKES
+import com.example.flick.gen.jooq.tables.references.LIKES
 import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
