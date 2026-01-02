@@ -16,7 +16,7 @@ FROM openjdk:26-ea-21-oraclelinux8
 
 RUN mkdir /app
 
-EXPOSE 8080
+EXPOSE 80
 
 COPY --from=build "/home/build/app/presentation/build/libs/presentation-0.0.1-SNAPSHOT.jar" /app/app.jar
 

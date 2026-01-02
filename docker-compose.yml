@@ -7,10 +7,13 @@ services:
       dockerfile: Dockerfile
     tty: true
     ports:
-      - 8088:8080
+      - 80:80
     depends_on:
       - mysql
       - minio
+    environment:
+      PORT: 80
+      JDBC_URL: jdbc:mysql://mysql:3306/flick_db
 
   mysql:
     image: mysql:8.0
