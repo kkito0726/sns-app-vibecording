@@ -1,4 +1,4 @@
-FROM gradle:jdk21 AS build
+FROM gradle:8.5.0-jdk21 AS build
 
 ARG BUILD_DIR=/home/build
 
