@@ -13,6 +13,7 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:${jwtVersion}")
     testImplementation(project(":jooq-generator"))
     testImplementation("org.springframework.boot:spring-boot-starter-jooq")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 }
 
 springBoot {
