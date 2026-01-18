@@ -1,8 +1,6 @@
 package com.example.flick.presentation.config
 
-import com.example.flick.presentation.security.CustomUserDetailsService
 import com.example.flick.presentation.security.JwtAuthenticationFilter
-import com.example.flick.usecase.config.TokenProvider
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -34,6 +32,7 @@ class SecurityConfig(
                 it.requestMatchers("/health").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                 it.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                it.requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 it.anyRequest().authenticated()
             }
             .addFilterBefore(
