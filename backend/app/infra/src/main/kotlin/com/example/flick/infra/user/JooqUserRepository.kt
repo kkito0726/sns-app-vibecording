@@ -42,6 +42,8 @@ open class JooqUserRepository(
             record.apply {
                 set(USERS.USERNAME, user.username.value)
                 set(USERS.EMAIL, user.email.value)
+                set(USERS.BIO, user.bio)
+                set(USERS.PROFILE_IMAGE_URL, user.profileImageUrl)
                 // Only update passwordHash if it's a new hash (i.e., not already hashed)
                 if (user.password.value != get(USERS.PASSWORD_HASH)) {
                     set(USERS.PASSWORD_HASH, user.password.value)
@@ -51,6 +53,8 @@ open class JooqUserRepository(
             record.update()
             user.copy(
                 password = Password(record.get(USERS.PASSWORD_HASH)!!),
+                bio = record.get(USERS.BIO),
+                profileImageUrl = record.get(USERS.PROFILE_IMAGE_URL),
                 updatedAt = record.get(USERS.UPDATED_AT)
             )
         }

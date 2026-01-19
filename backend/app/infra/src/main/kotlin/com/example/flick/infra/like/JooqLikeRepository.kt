@@ -34,10 +34,18 @@ open class JooqLikeRepository(
             ?.into(Like::class.java)
     }
 
-    override fun countByFlickId(flickId: Long): Long {
+    override fun countByFlickId(flickId: Long): Int {
         return dslContext.selectCount()
             .from(LIKES)
             .where(LIKES.FLICK_ID.eq(flickId))
-            .fetchOne(0, Long::class.java) ?: 0L
+            .fetchOne(0, Int::class.java)!!
+    }
+
+    override fun isLiked(userId: Long, flickId: Long): Boolean {
+        return dslContext.fetchExists(
+            dslContext.selectFrom(LIKES)
+                .where(LIKES.USER_ID.eq(userId))
+                .and(LIKES.FLICK_ID.eq(flickId))
+        )
     }
 }

@@ -4,5 +4,6 @@ interface LikeRepository {
     fun save(like: Like)
     fun delete(userId: Long, flickId: Long)
     fun findByUserIdAndFlickId(userId: Long, flickId: Long): Like?
-    fun countByFlickId(flickId: Long): Long
+    fun countByFlickId(flickId: Long): Int
+    fun isLiked(userId: Long, flickId: Long): Boolean
 }
