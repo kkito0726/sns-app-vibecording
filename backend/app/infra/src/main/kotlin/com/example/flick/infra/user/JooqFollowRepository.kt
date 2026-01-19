@@ -47,4 +47,11 @@ class JooqFollowRepository(
             .where(FOLLOWS.FOLLOWER_ID.eq(userId))
             .fetchOne(0, Long::class.java)!!
     }
+
+    override fun findFollowingIdsByFollowerId(followerId: Long): List<Long> {
+        return dslContext.select(FOLLOWS.FOLLOWING_ID)
+            .from(FOLLOWS)
+            .where(FOLLOWS.FOLLOWER_ID.eq(followerId))
+            .fetchInto(Long::class.java)
+    }
 }
