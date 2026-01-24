@@ -1,13 +1,14 @@
 package com.example.flick.usecase.flick
 
 import com.example.flick.domain.common.FileStorageService
+import com.example.flick.domain.error.ErrorCode
+import com.example.flick.domain.error.NotFoundException
 import com.example.flick.domain.flick.Flick
 import com.example.flick.domain.flick.FlickRepository
-import com.example.flick.domain.user.Email
 import com.example.flick.domain.user.UserRepository
+import com.example.flick.domain.user.Username
 import com.example.flick.usecase.flick.input.FlickCreationInput
 import com.example.flick.usecase.flick.response.FlickResponse
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 
@@ -17,16 +18,9 @@ class FlickCreationUseCase(
     private val userRepository: UserRepository,
     private val fileStorageService: FileStorageService
 ) {
-    fun createFlick(input: FlickCreationInput): FlickResponse {
-        val principal = SecurityContextHolder.getContext().authentication.principal
-        val userEmail = if (principal is UserDetails) {
-            principal.username
-        } else {
-            throw IllegalStateException("User not authenticated")
-        }
-
-        val user = userRepository.findByEmail(Email(userEmail))
-            ?: throw IllegalStateException("Authenticated user not found in repository")
+     fun createFlick(input: FlickCreationInput, authUser: UserDetails): FlickResponse {
+         val authUserId = userRepository.findByUsername(Username(authUser.username))?.id
+             ?: throw NotFoundException(ErrorCode.NOT_FOUND_USER)
 
         var imageUrl: String? = null
         if (input.imageFile != null && !input.imageFile.isEmpty) {
@@ -39,7 +33,7 @@ class FlickCreationUseCase(
         }
 
         val flick = Flick(
-            userId = user.id!!,
+            userId = authUserId,
             textContent = input.textContent,
             imageUrl = imageUrl,
             videoUrl = videoUrl,

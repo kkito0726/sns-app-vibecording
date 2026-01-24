@@ -1,11 +1,19 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.flywaydb:flyway-mysql:10.10.0")
+        classpath("mysql:mysql-connector-java:8.0.33")
+    }
+}
+
 plugins {
     id("org.flywaydb.flyway") version "10.10.0"
 }
 
 
 dependencies {
-    implementation("org.flywaydb:flyway-mysql")
-    implementation("mysql:mysql-connector-java:8.0.33") // MySQL 8.0.33 に対応するバージョン
     implementation("org.slf4j:slf4j-simple:1.7.36") // ロギング用
 }
 
