@@ -10,5 +10,5 @@ data class Flick(
     val imageUrl: String?,
     val videoUrl: String?,
     val postType: PostType,
-    val createdAt: LocalDateTime? = null
+    val createdAt: LocalDateTime = LocalDateTime.now()
 )

@@ -18,6 +18,7 @@ class JooqFlickRepository(
             .set(FLICKS.IMAGE_URL, flick.imageUrl)
             .set(FLICKS.VIDEO_URL, flick.videoUrl)
             .set(FLICKS.POST_TYPE, flick.postType.name)
+            .set(FLICKS.CREATED_AT, flick.createdAt)
             .returningResult(FLICKS.ID, FLICKS.CREATED_AT)
             .fetchOne()!!
 

@@ -18,7 +18,7 @@ CREATE TABLE flicks (
     text_content TEXT,
     image_url VARCHAR(255),
     video_url VARCHAR(255),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
