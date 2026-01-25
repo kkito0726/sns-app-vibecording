@@ -1,29 +1,56 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import api from '@/api'
+import type { LoginUserRequest, RegisterUserRequest, UserResponse } from '@/types/api'
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref<string | null>(null)
+  const token = ref<string | null>(localStorage.getItem('token'))
+  const user = ref<UserResponse | null>(null)
 
-  const isLoggedIn = computed(() => !!token.value)
+  const isLoggedIn = computed(() => !!token.value && !!user.value)
 
   function setToken(newToken: string) {
     token.value = newToken
-    // オプション：localStorageにトークンを保存して永続化する
-    // localStorage.setItem('authToken', newToken)
+    localStorage.setItem('token', newToken)
   }
 
   function clearToken() {
     token.value = null
-    // localStorage.removeItem('authToken')
+    user.value = null
+    localStorage.removeItem('token')
   }
 
-  // アプリケーション初期化時にlocalStorageからトークンを読み込む
-  // function loadToken() {
-  //   const storedToken = localStorage.getItem('authToken')
-  //   if (storedToken) {
-  //     token.value = storedToken
-  //   }
-  // }
+  async function login(credentials: LoginUserRequest) {
+    const { data } = await api.post('/auth/login', credentials)
+    setToken(data.token)
+    await fetchUser()
+  }
 
-  return { token, isLoggedIn, setToken, clearToken }
+  async function register(userInfo: RegisterUserRequest) {
+    await api.post('/users/register', userInfo)
+  }
+
+  async function logout() {
+    clearToken()
+  }
+
+  async function fetchUser() {
+    if (token.value) {
+      try {
+        const { data } = await api.get<UserResponse>('/users/me')
+        user.value = data
+      } catch (error) {
+        console.error('Failed to fetch user', error)
+        clearToken()
+      }
+    }
+  }
+
+  async function checkAuth() {
+    if (token.value) {
+      await fetchUser()
+    }
+  }
+
+  return { token, user, isLoggedIn, login, register, logout, checkAuth }
 })
