@@ -1,187 +1,136 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import { useFlickStore } from "@/stores/flick"; // Flickストアをインポート
-import axios from "axios";
+import api from "@/api";
+import FlickCard from "@/components/FlickCard.vue";
+import type { UserResponse, FlickDetailResponse } from "@/types/api";
 
 const route = useRoute();
 const authStore = useAuthStore();
-const flickStore = useFlickStore(); // Flickストアを使用
 
-const username = ref<string | string[]>(route.params.username);
-const userProfile = ref<any>(null);
+const userProfile = ref<UserResponse | null>(null);
+const userFlicks = ref<FlickDetailResponse[]>([]);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
 
-const isMyProfile = computed(() => {
-  // authStore.user が存在しないため、一旦コメントアウト
-  // return authStore.user?.username === username.value
-  return false;
-});
+const userId = computed(() => parseInt(route.params.userId as string));
+const isMyProfile = computed(() => authStore.user?.id === userId.value);
+const isFollowing = computed(() => userProfile.value?.isFollowing ?? false);
 
 const fetchUserProfile = async () => {
   try {
     isLoading.value = true;
     error.value = null;
-    const response = await axios.get(`/api/users/${username.value}`, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
-    userProfile.value = response.data;
+    const { data } = await api.get<UserResponse>(`/users/${userId.value}`);
+    userProfile.value = data;
   } catch (err: any) {
     error.value = err.response?.data?.message || "Failed to fetch user profile.";
-  } finally {
-    isLoading.value = false;
+    userProfile.value = null;
   }
 };
 
-const followUser = async () => {
+const fetchUserFlicks = async () => {
   try {
-    await axios.post(
-      `/api/users/${username.value}/follow`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${authStore.token}`,
-        },
-      }
-    );
-    // フォロー成功後、プロフィールを再取得してUIを更新
-    await fetchUserProfile();
-  } catch (err: any) {
-    error.value = err.response?.data?.message || "Failed to follow user.";
+    // APIにユーザーごとのFlickを取得するエンドポイントがないため、
+    // 一旦全フィードを取得し、該当ユーザーのFlickのみをフィルタリング
+    // TODO: 専用のAPIエンドポイントが用意されたら修正
+    const { data } = await api.get<FlickDetailResponse[]>("/flicks/feed");
+    userFlicks.value = data.filter((flick) => flick.author.userId === userId.value);
+  } catch (err) {
+    console.error("Failed to fetch user flicks:", err);
+    userFlicks.value = [];
   }
 };
 
-const unfollowUser = async () => {
+const toggleFollow = async () => {
+  if (!userProfile.value) return;
+
   try {
-    await axios.delete(`/api/users/${username.value}/follow`, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`,
-      },
-    });
-    // アンフォロー成功後、プロフィールを再取得してUIを更新
-    await fetchUserProfile();
-  } catch (err: any) {
-    error.value = err.response?.data?.message || "Failed to unfollow user.";
+    if (userProfile.value.isFollowing) {
+      await api.delete(`/users/${userId.value}/follow`);
+      userProfile.value.followerCount--;
+    } else {
+      await api.post(`/users/${userId.value}/follow`);
+      userProfile.value.followerCount++;
+    }
+    userProfile.value.isFollowing = !userProfile.value.isFollowing;
+  } catch (err) {
+    console.error("Failed to toggle follow:", err);
   }
 };
 
 onMounted(async () => {
   await fetchUserProfile();
-  // ユーザーのFlick一覧を取得
-  if (typeof username.value === "string") {
-    await flickStore.fetchUserFlicks(username.value);
-  }
+  await fetchUserFlicks();
+  isLoading.value = false;
 });
 
-const toggleLike = (flickId: number) => {
-  const flick = flickStore.flicks.find((f) => f.id === flickId);
-  if (flick) {
-    if (flick.isLiked) {
-      flickStore.unlike(flickId);
-    } else {
-      flickStore.like(flickId);
+watch(
+  () => route.params.userId,
+  async (newUserId, oldUserId) => {
+    if (newUserId !== oldUserId) {
+      isLoading.value = true;
+      await fetchUserProfile();
+      await fetchUserFlicks();
+      isLoading.value = false;
     }
-  }
-};
+  },
+);
 </script>
 
 <template>
-  <div class="user-profile-view p-4">
-    <h1 class="text-3xl font-bold mb-4">User Profile: {{ username }}</h1>
-
-    <div v-if="isLoading" class="text-gray-600">Loading profile...</div>
-    <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <div v-else-if="userProfile">
-      <div class="flex items-center space-x-4 mb-4">
-        <img
-          :src="userProfile.profileImageUrl || 'https://via.placeholder.com/150'"
-          alt="Profile"
-          class="w-24 h-24 rounded-full object-cover"
-        />
-        <div>
-          <p class="text-xl font-semibold">{{ userProfile.username }}</p>
-          <p class="text-gray-600">{{ userProfile.bio || "No bio available." }}</p>
-          <div class="flex space-x-4 mt-2">
-            <p>Followers: {{ userProfile.followerCount }}</p>
-            <p>Following: {{ userProfile.followingCount }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="!isMyProfile" class="mt-4">
-        <button
-          v-if="!userProfile.isFollowing"
-          @click="followUser"
-          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Follow
-        </button>
-        <button
-          v-else
-          @click="unfollowUser"
-          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Unfollow
-        </button>
-      </div>
-
-      <h2 class="text-2xl font-bold mt-8 mb-4">Flicks by {{ username }}</h2>
-
+  <div class="user-profile-view py-8 px-4">
+    <div v-if="isLoading" class="text-center text-purple-300 text-xl">Loading profile...</div>
+    <div v-else-if="error" class="text-center text-pink-500 text-xl">{{ error }}</div>
+    <div v-else-if="userProfile" class="max-w-2xl mx-auto">
       <div
-        v-if="flickStore.flicks.length > 0"
-        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-lg shadow-purple-500/20 border border-purple-500/30 mb-8 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8"
       >
-        <div
-          v-for="flick in flickStore.flicks"
-          :key="flick.id"
-          class="border rounded-lg p-4 shadow"
-        >
-          <p v-if="flick.textContent">{{ flick.textContent }}</p>
-          <img
-            v-if="flick.imageUrl"
-            :src="flick.imageUrl"
-            alt="Flick image"
-            class="mt-2 rounded-lg w-full"
-          />
-
-          <div class="flex items-center justify-between mt-4 text-sm text-gray-600">
-            <span>{{ new Date(flick.createdAt).toLocaleString() }}</span>
-            <div class="flex items-center space-x-2">
-              <button @click="toggleLike(flick.id)" class="focus:outline-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  :class="{
-                    'text-red-500 fill-current': flick.isLiked,
-                    'text-gray-400': !flick.isLiked,
-                  }"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 016.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"
-                  />
-                </svg>
-              </button>
-              <span>{{ flick.likes }}</span>
-            </div>
+        <img
+          :src="userProfile.profileImageUrl || '/src/assets/default_profile_icon.svg'"
+          alt="Profile"
+          class="w-32 h-32 rounded-full object-cover border-4 border-purple-400 shadow-md"
+        />
+        <div class="text-center md:text-left">
+          <h1 class="text-4xl font-bold text-purple-400 font-orbitron">
+            {{ userProfile.username }}
+          </h1>
+          <p class="text-gray-300 text-lg mt-2">{{ userProfile.bio || "No bio available." }}</p>
+          <div class="flex justify-center md:justify-start space-x-6 mt-4 text-gray-400">
+            <p>
+              <span class="font-bold text-purple-300">{{ userProfile.followerCount }}</span>
+              Followers
+            </p>
+            <p>
+              <span class="font-bold text-purple-300">{{ userProfile.followingCount }}</span>
+              Following
+            </p>
+          </div>
+          <div class="mt-6" v-if="!isMyProfile && authStore.isLoggedIn">
+            <button
+              @click="toggleFollow"
+              :class="{
+                'bg-pink-500 hover:bg-pink-600 shadow-pink-500/50': isFollowing,
+                'bg-purple-500 hover:bg-purple-600 shadow-purple-500/50': !isFollowing,
+              }"
+              class="text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
+            >
+              {{ isFollowing ? "Unfollow" : "Follow" }}
+            </button>
           </div>
         </div>
       </div>
-      <p v-else>This user has no flicks yet.</p>
+
+      <h2 class="text-3xl font-bold text-purple-400 font-orbitron mb-6 text-center">
+        Flicks by {{ userProfile.username }}
+      </h2>
+
+      <div v-if="userFlicks.length > 0" class="space-y-8">
+        <FlickCard v-for="flick in userFlicks" :key="flick.id" :flick="flick" />
+      </div>
+      <p v-else class="text-center text-gray-400 text-xl">This user has no flicks yet.</p>
     </div>
-    <div v-else class="text-gray-600">No user profile found.</div>
+    <div v-else class="text-center text-gray-400 text-xl">No user profile found.</div>
   </div>
 </template>
-
-<style scoped>
-/* 必要に応じてスタイルを追加 */
-</style>
