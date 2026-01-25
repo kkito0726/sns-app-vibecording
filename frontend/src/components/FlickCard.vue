@@ -31,7 +31,7 @@ const toggleLike = async () => {
   <div class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg shadow-purple-500/20 border border-purple-500/30 mb-6 neon-border-animation">
     <div class="flex items-center mb-4">
       <img
-        :src="flick.author.profileImageUrl || 'https://via.placeholder.com/40'"
+        :src="flick.author.profileImageUrl || '/src/assets/default_profile_icon.svg'"
         alt="Profile"
         class="w-10 h-10 rounded-full mr-4 border-2 border-purple-400"
       />
