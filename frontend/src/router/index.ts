@@ -44,20 +44,22 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => { // async を追加
   const authStore = useAuthStore();
+  await authStore.checkAuth(); // await を追加
+
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
   const isLoginPage = to.name === 'login';
   const isRegisterPage = to.name === 'register';
 
   if (requiresAuth && !authStore.isLoggedIn) {
-    // If route requires auth and user is not logged in, redirect to login
+    // 認証が必要なルートでログインしていない場合、ログインページへリダイレクト
     next({ name: 'login' });
   } else if ((isLoginPage || isRegisterPage) && authStore.isLoggedIn) {
-    // If user is logged in and tries to access login/register, redirect to home
+    // ログイン済みでログイン/登録ページにアクセスしようとした場合、ホームへリダイレクト
     next({ name: 'home' });
   } else {
-    // Otherwise, allow navigation
+    // それ以外は通常通りナビゲーションを許可
     next();
   }
 });
