@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
+import { RouterLink, RouterView, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { onMounted } from "vue";
 
 const authStore = useAuthStore();
-
+const router = useRouter();
 const handleLogout = () => {
   authStore.logout();
+  router.replace("/login"); // ログアウト後に/loginへリダイレクト
 };
 
 onMounted(() => {
