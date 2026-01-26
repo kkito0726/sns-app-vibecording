@@ -3,12 +3,12 @@ import { ref } from "vue";
 import api from "@/api";
 import type { FlickResponse } from "@/types/api";
 import ErrorAlert from "@/components/atoms/ErrorAlert.vue";
+import FileUploadButton from "@/components/atoms/FileUploadButton.vue";
 
 const emit = defineEmits<{
   flickCreated: [];
 }>();
 
-// CreateFlickView の状態
 const textContent = ref("");
 const imageFile = ref<File | null>(null);
 const videoFile = ref<File | null>(null);
@@ -16,37 +16,32 @@ const postType = ref<"TEXT" | "IMAGE" | "VIDEO">("TEXT");
 const errorCreateFlick = ref<string | null>(null);
 const loadingCreateFlick = ref(false);
 
-// ファイル入力要素への参照
-const imageInputRef = ref<HTMLInputElement | null>(null);
-const videoInputRef = ref<HTMLInputElement | null>(null);
+const imageUploadRef = ref<InstanceType<typeof FileUploadButton> | null>(null);
+const videoUploadRef = ref<InstanceType<typeof FileUploadButton> | null>(null);
 
-const onImageChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  if (target.files && target.files.length > 0) {
-    imageFile.value = target.files[0];
-    videoFile.value = null; // 画像が選択されたら動画をクリア
-    if (videoInputRef.value) videoInputRef.value.value = "";
+const onImageChange = (file: File | null) => {
+  if (file) {
+    imageFile.value = file;
+    videoFile.value = null;
+    videoUploadRef.value?.reset();
     postType.value = "IMAGE";
   } else {
     imageFile.value = null;
     if (!videoFile.value && !textContent.value) {
-      // テキストも画像も動画もなければTEXT
       postType.value = "TEXT";
     }
   }
 };
 
-const onVideoChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  if (target.files && target.files.length > 0) {
-    videoFile.value = target.files[0];
-    imageFile.value = null; // 動画が選択されたら画像をクリア
-    if (imageInputRef.value) imageInputRef.value.value = "";
+const onVideoChange = (file: File | null) => {
+  if (file) {
+    videoFile.value = file;
+    imageFile.value = null;
+    imageUploadRef.value?.reset();
     postType.value = "VIDEO";
   } else {
     videoFile.value = null;
     if (!imageFile.value && !textContent.value) {
-      // テキストも画像も動画もなければTEXT
       postType.value = "TEXT";
     }
   }
@@ -54,12 +49,11 @@ const onVideoChange = (event: Event) => {
 
 const handleTextChange = () => {
   if (textContent.value || imageFile.value || videoFile.value) {
-    // 優先順位: VIDEO > IMAGE > TEXT
     if (videoFile.value) postType.value = "VIDEO";
     else if (imageFile.value) postType.value = "IMAGE";
     else postType.value = "TEXT";
   } else {
-    postType.value = "TEXT"; // 何も入力されていない場合はデフォルトでTEXT
+    postType.value = "TEXT";
   }
 };
 
@@ -79,13 +73,11 @@ const createFlick = async () => {
   }
 
   try {
-    // postTypeが正しく設定されていることを確認
     const currentPostType = (videoFile.value ? "VIDEO" : imageFile.value ? "IMAGE" : "TEXT") as
       | "TEXT"
       | "IMAGE"
       | "VIDEO";
 
-    // textContentがない場合にTEXTタイプで投稿されるのを防ぐ
     if (currentPostType === "TEXT" && !textContent.value.trim()) {
       errorCreateFlick.value = "テキスト内容がありません。";
       loadingCreateFlick.value = false;
@@ -99,16 +91,15 @@ const createFlick = async () => {
     });
     console.log("Flick created successfully");
 
-    // 親コンポーネントに投稿成功を通知
     emit("flickCreated");
 
     // フォームをリセット
     textContent.value = "";
     imageFile.value = null;
     videoFile.value = null;
-    postType.value = "TEXT"; // リセット後にデフォルトのポストタイプをTEXTに戻す
-    if (imageInputRef.value) imageInputRef.value.value = "";
-    if (videoInputRef.value) videoInputRef.value.value = "";
+    postType.value = "TEXT";
+    imageUploadRef.value?.reset();
+    videoUploadRef.value?.reset();
   } catch (err: any) {
     errorCreateFlick.value = err.response?.data?.message || "Flickの投稿に失敗しました。";
     console.error("Flickの投稿エラー:", err);
@@ -142,19 +133,12 @@ const createFlick = async () => {
       <!-- ファイルアップロードアイコンと投稿ボタン -->
       <div class="flex items-center justify-between mt-4">
         <div class="flex space-x-4">
-          <input
-            type="file"
-            id="imageUpload"
+          <FileUploadButton
+            ref="imageUploadRef"
             accept="image/*"
-            @change="onImageChange"
-            class="hidden"
-            ref="imageInputRef"
-          />
-          <button
-            type="button"
-            @click="imageInputRef?.click()"
-            class="flex items-center justify-center p-2 rounded-full bg-purple-500 hover:bg-purple-600 text-white shadow-lg shadow-purple-500/50 transition-all duration-300 transform hover:scale-110"
+            color="purple"
             title="画像をアップロード"
+            @change="onImageChange"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -170,21 +154,14 @@ const createFlick = async () => {
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-          </button>
+          </FileUploadButton>
 
-          <input
-            type="file"
-            id="videoUpload"
+          <FileUploadButton
+            ref="videoUploadRef"
             accept="video/*"
-            @change="onVideoChange"
-            class="hidden"
-            ref="videoInputRef"
-          />
-          <button
-            type="button"
-            @click="videoInputRef?.click()"
-            class="flex items-center justify-center p-2 rounded-full bg-pink-500 hover:bg-pink-600 text-white shadow-lg shadow-pink-500/50 transition-all duration-300 transform hover:scale-110"
+            color="pink"
             title="動画をアップロード"
+            @change="onVideoChange"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -200,7 +177,7 @@ const createFlick = async () => {
                 d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M4 18h16a2 2 0 002-2V8a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2z"
               />
             </svg>
-          </button>
+          </FileUploadButton>
         </div>
 
         <button
