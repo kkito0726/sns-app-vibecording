@@ -40,6 +40,7 @@ const handleRegister = async () => {
         placeholder="yourusername"
         :required="true"
         accent-color="pink"
+        @enter-pressed="handleRegister"
       />
       <FormInput
         id="email"
@@ -49,6 +50,7 @@ const handleRegister = async () => {
         placeholder="you@example.com"
         :required="true"
         accent-color="pink"
+        @enter-pressed="handleRegister"
       />
       <FormInput
         id="password"
@@ -58,6 +60,7 @@ const handleRegister = async () => {
         placeholder="********"
         :required="true"
         accent-color="pink"
+        @enter-pressed="handleRegister"
       />
       <ErrorAlert :message="error" />
       <div>
