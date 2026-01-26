@@ -60,6 +60,13 @@ const toggleFollow = async () => {
   }
 };
 
+const handleFlickDeleted = (deletedFlickId: number) => {
+  const index = userFlicks.value.findIndex((flick) => flick.id === deletedFlickId);
+  if (index !== -1) {
+    userFlicks.value.splice(index, 1);
+  }
+};
+
 onMounted(async () => {
   await fetchUserProfile();
   await fetchUserFlicks();
@@ -127,7 +134,7 @@ watch(
       </h2>
 
       <div v-if="userFlicks.length > 0" class="space-y-8">
-        <FlickCard v-for="flick in userFlicks" :key="flick.id" :flick="flick" />
+        <FlickCard @flickDeleted="handleFlickDeleted" v-for="flick in userFlicks" :key="flick.id" :flick="flick" />
       </div>
       <p v-else class="text-center text-gray-400 text-xl">This user has no flicks yet.</p>
     </div>

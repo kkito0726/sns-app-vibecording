@@ -132,6 +132,13 @@ const createFlick = async () => {
   }
 };
 
+const handleFlickDeleted = (deletedFlickId: number) => {
+  const index = flicks.value.findIndex((flick) => flick.id === deletedFlickId);
+  if (index !== -1) {
+    flicks.value.splice(index, 1);
+  }
+};
+
 onMounted(() => {
   fetchFlicks();
 });
@@ -253,7 +260,7 @@ onMounted(() => {
       まだFlickがありません。誰かをフォローするか、Flickを投稿しましょう！
     </div>
     <div v-else class="space-y-8 max-w-2xl mx-auto">
-      <FlickCard v-for="flick in flicks" :key="flick.id" :flick="flick" />
+      <FlickCard v-for="flick in flicks" :key="flick.id" :flick="flick" @flickDeleted="handleFlickDeleted" />
     </div>
   </main>
 </template>
