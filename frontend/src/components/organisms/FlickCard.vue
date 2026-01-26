@@ -3,7 +3,9 @@ import { defineProps, ref, computed, defineEmits } from "vue";
 import type { FlickDetailResponse, CommentResponse } from "@/types/api";
 import api from "@/api";
 import { RouterLink } from "vue-router";
-import { useAuthStore } from "@/stores/auth"; // 認証ストアをインポート
+import { useAuthStore } from "@/stores/auth";
+import Avatar from "@/components/atoms/Avatar.vue";
+import ErrorAlert from "@/components/atoms/ErrorAlert.vue";
 
 const props = defineProps<{
   flick: FlickDetailResponse;
@@ -97,10 +99,12 @@ const deleteFlick = async () => {
     class="bg-gray-800/50 backdrop-blur-sm p-6 rounded-xl shadow-lg shadow-purple-500/20 border border-purple-500/30 mb-6 neon-border-animation"
   >
     <div class="flex items-center mb-4 relative">
-      <img
-        :src="flick.author.profileImageUrl || '/src/assets/default_profile_icon.svg'"
+      <Avatar
+        :src="flick.author.profileImageUrl"
         alt="Profile"
-        class="w-10 h-10 rounded-full mr-4 border-2 border-purple-400"
+        size="md"
+        border-color="purple"
+        class="mr-4"
       />
       <RouterLink
         :to="`/users/${flick.author.userId}`"
@@ -203,7 +207,7 @@ const deleteFlick = async () => {
       <h3 class="text-xl font-bold text-gray-300 mb-4">コメント</h3>
 
       <div v-if="commentLoading" class="text-purple-300 text-sm">コメントを読み込み中...</div>
-      <div v-else-if="commentError" class="text-pink-500 text-sm">{{ commentError }}</div>
+      <ErrorAlert v-else-if="commentError" :message="commentError" :centered="false" />
       <div v-else-if="comments.length === 0" class="text-gray-400 text-sm mb-4">
         まだコメントがありません。
       </div>
@@ -213,10 +217,12 @@ const deleteFlick = async () => {
           :key="comment.id"
           class="bg-gray-700/30 p-3 rounded-lg flex items-start space-x-3"
         >
-          <img
-            :src="comment.authorProfileImageUrl || '/src/assets/default_profile_icon.svg'"
+          <Avatar
+            :src="comment.authorProfileImageUrl"
             alt="Author Profile"
-            class="w-8 h-8 rounded-full border border-purple-400"
+            size="sm"
+            border-color="purple"
+            border-width="thin"
           />
           <div>
             <RouterLink
@@ -249,7 +255,7 @@ const deleteFlick = async () => {
           投稿
         </button>
       </form>
-      <div v-if="commentError" class="text-pink-500 text-sm mt-2">{{ commentError }}</div>
+      <ErrorAlert v-if="commentError" :message="commentError" :centered="false" class="mt-2" />
     </div>
   </div>
 </template>

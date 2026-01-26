@@ -3,7 +3,8 @@ import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import api from "@/api";
-import FlickCard from "@/components/FlickCard.vue";
+import FlickCard from "@/components/organisms/FlickCard.vue";
+import Avatar from "@/components/atoms/Avatar.vue";
 import type { UserResponse, FlickDetailResponse } from "@/types/api";
 
 const route = useRoute();
@@ -94,10 +95,13 @@ watch(
       <div
         class="bg-gray-800/50 backdrop-blur-sm p-8 rounded-xl shadow-lg shadow-purple-500/20 border border-purple-500/30 mb-8 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-8"
       >
-        <img
-          :src="userProfile.profileImageUrl || '/src/assets/default_profile_icon.svg'"
+        <Avatar
+          :src="userProfile.profileImageUrl"
           alt="Profile"
-          class="w-32 h-32 rounded-full object-cover border-4 border-purple-400 shadow-md"
+          size="xl"
+          border-color="purple"
+          border-width="thick"
+          class="shadow-md"
         />
         <div class="text-center md:text-left">
           <h1 class="text-4xl font-bold text-purple-400 font-orbitron">
