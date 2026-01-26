@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   "update:modelValue": [value: string];
+  "enterPressed": [];
 }>();
 
 const ringColorClass = {
@@ -36,6 +37,7 @@ const ringColorClass = {
       :id="id"
       :value="modelValue"
       @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
+      @keyup.enter="emit('enterPressed')"
       :type="type"
       :required="required"
       :placeholder="placeholder"

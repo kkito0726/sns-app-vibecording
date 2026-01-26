@@ -38,6 +38,7 @@ const handleLogin = async () => {
         placeholder="you@example.com"
         :required="true"
         accent-color="purple"
+        @enter-pressed="handleLogin"
       />
       <FormInput
         id="password"
@@ -47,6 +48,7 @@ const handleLogin = async () => {
         placeholder="********"
         :required="true"
         accent-color="purple"
+        @enter-pressed="handleLogin"
       />
       <ErrorAlert :message="error" />
       <div>
