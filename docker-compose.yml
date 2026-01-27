@@ -1,19 +1,40 @@
-version: "3.8"
-
 services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+    container_name: flick-frontend
+    ports:
+      - "3000:8080"
+    depends_on:
+      backend:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: flick-backend
     tty: true
     ports:
-      - 80:80
+      - "80:80"
     depends_on:
-      - mysql
-      - minio
+      mysql:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     environment:
       PORT: 80
       JDBC_URL: jdbc:mysql://mysql:3306/flick_db
+    restart: unless-stopped
 
   mysql:
     image: mysql:8.0
@@ -29,13 +50,14 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
       retries: 10
+    restart: unless-stopped
 
   minio:
     image: minio/minio:latest
     container_name: flick-minio
     ports:
-      - "9000:9000" # API port
-      - "9001:9001" # Console port
+      - "9000:9000"
+      - "9001:9001"
     volumes:
       - minio-data:/data
     environment:
@@ -47,6 +69,7 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    restart: unless-stopped
 
 volumes:
   mysql-data:
