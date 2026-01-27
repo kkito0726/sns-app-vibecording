@@ -21,7 +21,12 @@ const handleRegister = async () => {
       email: email.value,
       password: password.value,
     });
-    router.push("/login");
+    // 登録成功後、自動でログインしてホーム画面へ遷移
+    await authStore.login({
+      email: email.value,
+      password: password.value,
+    });
+    router.push("/");
   } catch (err) {
     error.value = "Registration failed. Please try again.";
     console.error("Registration failed:", err);
