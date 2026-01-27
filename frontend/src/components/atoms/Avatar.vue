@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
   borderWidth: "normal",
 });
 
-const defaultImage = "/src/assets/default_profile_icon.svg";
+const defaultImage = "/default_profile_icon.svg";
 
 const sizeClasses = {
   sm: "w-8 h-8",

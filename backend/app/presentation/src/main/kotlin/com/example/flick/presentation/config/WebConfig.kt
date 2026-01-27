@@ -9,7 +9,12 @@ class WebConfig : WebMvcConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:5173", "http://127.0.0.1:5173") // Viteのデフォルトポート
+            .allowedOrigins(
+                "http://localhost:5173",   // Vite dev server
+                "http://127.0.0.1:5173",
+                "http://localhost:3000",   // Docker frontend
+                "http://127.0.0.1:3000"
+            )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)
